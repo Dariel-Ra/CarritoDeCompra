@@ -37,12 +37,11 @@ else
 
 @code
 {
-    public string TituloForm => request.ProductoID == 0 ?
+    public string TituloForm => Carritorequest.CarritoID == 0 ?
     "Agregar Producto" : "Modificar Producto";
     public bool ShowForm { get; set; } = false;
     public string Filtro { get; set; } = "";
-    private int proveedorId = 0;
-    public List<ProductoResponse> Usuarios { get; set; }
+    public List<ProductoResponse> ProductoResponses { get; set; }
         = new List<ProductoResponse>();
     public List<CarritoResponse> CarritoResponses { get; set; }
         = new List<CarritoResponse>();
@@ -97,7 +96,7 @@ else
     public void Seleccionar(int Id)
     {
         ShowForm = true;
-        request = Usuarios
+        request = ProductoResponses
         .Where(c => c.ProductoID == Id)
         .Select(c => c.ToRequest())
         .FirstOrDefault() ?? new ProductoRequestUpdate();
@@ -110,10 +109,5 @@ else
             await CargarContactos();
             StateHasChanged();
         }
-    }
-    private async Task Report()
-    {
-        var url = $"/api/Producto/ProductoReport?proveedorId={proveedorId}";
-        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 }
