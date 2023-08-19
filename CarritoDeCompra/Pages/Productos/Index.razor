@@ -2,9 +2,6 @@
 
 @page "/productos"
 
-
-<h3>Productos</h3>
-
 @if (!ShowForm)
 {
     <h3>Productos (@Usuarios.Count)</h3>
@@ -43,74 +40,36 @@
         </div>
     </EditForm>
     <br />
-}
-@if (Usuarios != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var usuario in Usuarios)
-            {
-                <tr>
-                    <td>@usuario.ProductoID</td>
-                    <td>@usuario.Nombre</td>
-                    <td>@usuario.Precio</td>
-                    <td>@usuario.Stock</td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-warning" @onclick="()=>Seleccionar(usuario.ProductoID)">
+} 
+<div class="container">
+    <div class="row">
 
-                                <span class="oi oi-pencil"></span>
-                            </button>
-                            <button class="btn btn-danger">
-                                <span class="oi oi-trash"></span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    
     @foreach (var usuario in Usuarios)
     {
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card p-3 mb-2" style="width:18rem;">
-                    <div class="card-body">
-                        <label class="card-title">@usuario.Nombre</label>
-                        <div class="card-text">
-                            <label class="m-2">Stock: @usuario.Stock</label>
-                            <label class="m-2">Precio: @usuario.Precio</label>
-                        </div>
-                        <button @onclick="()=>Seleccionar(usuario.ProductoID)"
-                        class="btn btn-warning">
-                            Editar
-                        </button>
-                        <button @onclick="()=>AgregarAlCarrito(usuario.ProductoID)"
-                        class="btn btn-success">
-                            Agragar al carrito
-                            <span class="oi oi-cart"></span>
-                        </button>
-                    </div>
+        
+        <div class="card p-3 m-2" style="width:18rem;">
+            <div class="card-body">
+                <label class="card-title">@usuario.Nombre</label>
+                <div class="card-text">
+                    <label class="m-2">Stock: @usuario.Stock</label>
+                    <label class="m-2">Precio: @usuario.Precio</label>
+                </div>
+                <div class="d-grid gap-1">
+                    <button @onclick="()=>Seleccionar(usuario.ProductoID)"
+                    class="btn btn-warning">
+                        Editar
+                    </button>
+                    <button @onclick="()=>AgregarAlCarrito(usuario.ProductoID)"
+                    class="btn btn-success">
+                        Agragar al carrito
+                        <span class="oi oi-cart"></span>
+                    </button>
                 </div>
             </div>
-
         </div>
     }
-}
-else
-{
-    <p>Cargando..</p>
-}
+    </div>
+</div>
 
 @code
 {
