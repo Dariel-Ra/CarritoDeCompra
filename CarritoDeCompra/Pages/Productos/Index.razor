@@ -168,17 +168,14 @@
         {
             // Actualiza la interfaz o muestra un mensaje de éxito
             Console.WriteLine("Producto agregado al carrito correctamente.");
+            StateHasChanged();
         }
         else
         {
             // Muestra un mensaje de error en caso de fallo
             Console.WriteLine("Error al agregar el producto al carrito.");
+            StateHasChanged();
         }
-    }
-    private async Task Report()
-    {
-        var url = $"/api/Producto/ProductoReport?proveedorId={proveedorId}";
-        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 }
 
