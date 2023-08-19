@@ -1,0 +1,225 @@
+﻿@inject IJSRuntime JSRuntime
+
+@page "/productos"
+
+
+<h3>Productos</h3>
+
+@if (!ShowForm)
+{
+    <h3>Productos (@Usuarios.Count)</h3>
+    <div class="mb-2">
+        <button class="btn btn-success"
+            @onclick="()=>{ShowForm = !ShowForm;}">
+            Agregar
+        </button>
+    </div>
+}
+@if (ShowForm)
+{
+    <h3>@TituloForm</h3>
+    <EditForm Model="request" OnValidSubmit="Send">
+        <div class="form-group">
+            <div class="row g3">
+                <div class="col-md-6 col-lg-6">
+                    <label>Nombre</label>
+                    <InputText class="form-control" @bind-Value="request.Nombre"></InputText>
+                </div>
+                <div class="py-md-1 col-md-4 col-lg-4">
+                    <label>Cantidad</label>
+                    <InputNumber class="form-control" @bind-Value="request.Stock"></InputNumber>
+                </div>
+                <div class="py-md-1 col-md-4 col-lg-4">
+                    <label>Precio</label>
+                    <InputNumber class="form-control" @bind-Value="request.Precio"></InputNumber>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-outline-success">Guardar</button>
+            <button @onclick="Cancelar" class="btn btn-outline-danger">Cancelar</button>
+        </div>
+    </EditForm>
+    <br />
+}
+@if (Usuarios != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in Usuarios)
+            {
+                <tr>
+                    <td>@usuario.ProductoID</td>
+                    <td>@usuario.Nombre</td>
+                    <td>@usuario.Precio</td>
+                    <td>@usuario.Stock</td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-warning" @onclick="()=>Seleccionar(usuario.ProductoID)">
+
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button class="btn btn-danger">
+                                <span class="oi oi-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    @foreach (var usuario in Usuarios)
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card p-3 mb-2" style="width:18rem;">
+                    <div class="card-body">
+                        <label class="card-title">@usuario.Nombre</label>
+                        <div class="card-text">
+                            <label class="m-2">Stock: @usuario.Stock</label>
+                            <label class="m-2">Precio: @usuario.Precio</label>
+                        </div>
+                        <button @onclick="()=>Seleccionar(usuario.ProductoID)"
+                        class="btn btn-warning">
+                            Editar
+                        </button>
+                        <button @onclick="()=>AgregarAlCarrito(usuario.ProductoID)"
+                        class="btn btn-success">
+                            Agragar al carrito
+                            <span class="oi oi-cart"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+else
+{
+    <p>Cargando..</p>
+}
+
+@code
+{
+    public string TituloForm => request.ProductoID == 0 ?
+    "Agregar Producto" : "Modificar Producto";
+    public bool ShowForm { get; set; } = false;
+    public string Filtro { get; set; } = "";
+    private int proveedorId = 0;
+    public List<ProductoResponse> Usuarios { get; set; }
+        = new List<ProductoResponse>();
+
+
+    public ProductoRequestUpdate request { get; set; } = new ProductoRequestUpdate();
+    public CarritoRequest Carritorequest { get; set; } = new CarritoRequest();
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarContactos();
+    }
+
+    async Task CargarContactos()
+    {
+        var response = await productoServices.Consultar("");
+        if (response.Succeeded)
+        {
+            Usuarios = response.Data!;
+        }
+    }
+
+    void Cancelar()
+    {
+        request = new ProductoRequestUpdate();
+        ShowForm = false;
+    }
+    public async Task Send()
+    {
+        if (request.ProductoID == 0)
+        {
+            //Debo registrar el contacto..
+            var r = await productoServices.Crear(request);
+            if (r.Succeeded)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            //Debo solicitar modificar el contacto...
+            var r = await productoServices.Modificar(request);
+            if (r.Succeeded)
+            {
+                Cancelar();
+                await CargarContactos();
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Seleccionar(int Id)
+    {
+        ShowForm = true;
+        request = Usuarios
+        .Where(c => c.ProductoID == Id)
+        .Select(c => c.ToRequest())
+        .FirstOrDefault() ?? new ProductoRequestUpdate();
+    }
+    public async Task Eliminar(ProductoResponse contacto)
+    {
+        var resultado = await productoServices.Eliminar(contacto.ToRequest());
+        if (resultado.Succeeded)
+        {
+            await CargarContactos();
+            StateHasChanged();
+        }
+    }
+    public async Task AddToCart(CarritoRequest contacto)
+    {
+        var resultado = await carritoServices.Crear(Carritorequest);
+        if (resultado.Succeeded)
+        {
+            StateHasChanged();
+        }
+    }
+    private async Task AgregarAlCarrito(int productoID)
+    {
+        var carritoRequest = new CarritoRequest
+        {
+            UsuarioID = 1, // Asigna el ID del usuario que está realizando la compra
+            ProductoID = productoID
+        };
+
+        var result = await carritoServices.Crear(carritoRequest);
+
+        if (result.Succeeded)
+        {
+            // Actualiza la interfaz o muestra un mensaje de éxito
+            Console.WriteLine("Producto agregado al carrito correctamente.");
+        }
+        else
+        {
+            // Muestra un mensaje de error en caso de fallo
+            Console.WriteLine("Error al agregar el producto al carrito.");
+        }
+    }
+    private async Task Report()
+    {
+        var url = $"/api/Producto/ProductoReport?proveedorId={proveedorId}";
+        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+    }
+}
+
