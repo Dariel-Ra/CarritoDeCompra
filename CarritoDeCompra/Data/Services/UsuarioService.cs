@@ -8,18 +8,18 @@ using System.Data;
 
 namespace CarritoDeCompra.Data.Services;
 
-public interface IUsuarioService
+public interface IUsuarioServices
 {
     Task<Result<List<UsuarioResponse>>> Consultar(string filtro);
     Task<Result> Crear(UsuarioRequest request);
     Task<Result> Eliminar(UsuarioRequest request);
 }
 
-public class UsuarioService : IUsuarioService
+public class UsuarioServices : IUsuarioServices
 {
     private readonly IMyDbContext dbContext;
 
-    public UsuarioService(IMyDbContext dbContext)
+    public UsuarioServices(IMyDbContext dbContext)
     {
         this.dbContext = dbContext;
     }

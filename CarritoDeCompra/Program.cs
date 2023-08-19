@@ -16,6 +16,7 @@ builder.Services.AddDbContext<MyDbContext>();
 builder.Services.AddScoped<IMyDbContext,MyDbContext>();
 builder.Services.AddScoped<IProductoServices,ProductoServices>();
 builder.Services.AddScoped<ICarritoServices,CarritoServices>();
+builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 
 var app = builder.Build();
 
