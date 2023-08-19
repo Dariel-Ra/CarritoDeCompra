@@ -21,9 +21,9 @@
             {
                 <tr>
                     <td>@carrito.CarritoID</td>
-                    <td>@carrito.Producto</td>
-                    <td>@carrito.Producto</td>
-                    <td>@carrito.Usuario</td>
+                    <td>@carrito.Producto.Nombre</td>
+                    <td>@carrito.Producto.Precio</td>
+                    <td>@carrito.Usuario.Nombre</td>
                     
                 </tr>
             }
@@ -45,6 +45,8 @@ else
         = new List<ProductoResponse>();
     public List<CarritoResponse> CarritoResponses { get; set; }
         = new List<CarritoResponse>();
+    public List<UsuarioResponse> UsuarioResponses { get; set; }
+        = new List<UsuarioResponse>();
 
     public ProductoRequestUpdate request { get; set; } = new ProductoRequestUpdate();
     public CarritoRequest Carritorequest { get; set; } = new CarritoRequest();
@@ -67,40 +69,7 @@ else
         request = new ProductoRequestUpdate();
         ShowForm = false;
     }
-    public async Task Send()
-    {
-        if (request.ProductoID == 0)
-        {
-            //Debo registrar el contacto..
-            var r = await productoServices.Crear(request);
-            if (r.Succeeded)
-            {
-                Cancelar();
-                await CargarContactos();
-                StateHasChanged();
-            }
-        }
-        else
-        {
-            //Debo solicitar modificar el contacto...
-            var r = await productoServices.Modificar(request);
-            if (r.Succeeded)
-            {
-                Cancelar();
-                await CargarContactos();
-                StateHasChanged();
-            }
-        }
-    }
-
-    public void Seleccionar(int Id)
-    {
-        ShowForm = true;
-        request = ProductoResponses
-        .Where(c => c.ProductoID == Id)
-        .Select(c => c.ToRequest())
-        .FirstOrDefault() ?? new ProductoRequestUpdate();
-    }
+    
     public async Task Eliminar(ProductoResponse contacto)
     {
         var resultado = await productoServices.Eliminar(contacto.ToRequest());

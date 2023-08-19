@@ -30,8 +30,8 @@ public class Carrito
         => new()
         {
             CarritoID = CarritoID,
-            UsuarioID = Usuario.UsuarioID,
-            ProductoID = Producto.ProductoID
+            Usuario = Usuario,
+            Producto = Producto
         };
 }
 

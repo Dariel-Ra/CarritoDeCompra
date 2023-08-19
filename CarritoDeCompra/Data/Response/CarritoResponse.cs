@@ -5,6 +5,10 @@ namespace CarritoDeCompra.Data.Response;
 
 public class CarritoResponse
 {
+    public CarritoResponse()
+    {
+    }
+
     public int CarritoID { get; set; }
     public int UsuarioID { get; set; }
     public int ProductoID { get; set; }
@@ -16,8 +20,8 @@ public class CarritoResponse
         return new CarritoRequest
         {
             CarritoID = CarritoID,
-            UsuarioID = Usuario.UsuarioID,
-            ProductoID = Producto.ProductoID
+            UsuarioID = Usuario!.UsuarioID,
+            ProductoID = Producto!.ProductoID
         };
     }
 }
