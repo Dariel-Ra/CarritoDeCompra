@@ -13,7 +13,7 @@
                 <th>Nombre Producto</th>
                 <th>Precio</th>
                 <th>Usuario</th>
-                
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -24,7 +24,13 @@
                     <td>@carrito.Producto.Nombre</td>
                     <td>@carrito.Producto.Precio</td>
                     <td>@carrito.Usuario.Nombre</td>
-                    
+                                    <td class="d-print-none">
+                    <div class="btn-group">
+                        <button class="btn btn-danger" @onclick="()=>Eliminar(carrito)">
+                            <span class="oi oi-trash"></span>
+                        </button>
+                    </div>
+                </td>
                 </tr>
             }
         </tbody>
@@ -63,16 +69,10 @@ else
             CarritoResponses = response.Data!;
         }
     }
-
-    void Cancelar()
-    {
-        request = new ProductoRequestUpdate();
-        ShowForm = false;
-    }
     
-    public async Task Eliminar(ProductoResponse contacto)
+    public async Task Eliminar(CarritoResponse contacto)
     {
-        var resultado = await productoServices.Eliminar(contacto.ToRequest());
+        var resultado = await carritoServices.Eliminar(contacto.ToRequest());
         if (resultado.Succeeded)
         {
             await CargarContactos();
